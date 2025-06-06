@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eid Mubarak - Spin & Win!</title>
+    
+    <!-- Google Fonts for modern UI -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+    
+    <!-- Confetti.js from a CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* --- General Styling & Eid Theme (Based on Screenshot) --- */
+        :root {
+            --brand-yellow: #fdd835;
+            --brand-green: #00a82d;
+            --brand-dark-purple: #160a30;
+            --brand-glow-green: #39d094;
+            --page-bg: #0c011a;
+            --light-text: #ffffff;
+            --glow-color: rgba(173, 255, 47, 0.8); /* Lime glow for button */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--page-bg);
+            color: var(--light-text);
+            display: flex;
+            flex-direction: column; /* To stack ads and container */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px 0;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(57, 208, 148, 0.15), transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(57, 208, 148, 0.1), transparent 50%);
+        }
+
+        .container {
+            width: 95%;
+            max-width: 420px;
+            background: var(--brand-dark-purple);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            border: 2px solid var(--brand-glow-green);
+            box-shadow: 0 0 20px rgba(57, 208, 148, 0.5);
+            margin: 20px;
+        }
+
+        /* --- Header Styling --- */
+        .header {
+            margin-bottom: 25px;
+        }
+
+        .eid-greeting {
+            font-family: 'Great Vibes', cursive;
+            color: var(--brand-yellow);
+            font-size: 3rem;
+            font-weight: normal;
+            line-height: 1;
+        }
+
+        .main-heading {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        
+        /* --- Spin Wheel Styling (Updated Pointer) --- */
+        .wheel-container {
+            position: relative;
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -10px; /* Positioned just above the wheel */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 30px solid transparent;
+            border-right: 30px solid transparent;
+            border-bottom: 45px solid var(--brand-yellow);
+            z-index: 10;
+        }
+        .wheel-pointer::after {
+            content: '';
+            position: absolute;
+            top: 15px; /* Position inside the triangle */
+            left: -10px;
+            width: 20px;
+            height: 20px;
+            background: var(--brand-dark-purple);
+            border-radius: 50%;
+            border: 3px solid var(--brand-yellow);
+        }
+
+        #spinWheel {
+            width: 100%;
+            transition: transform 6s cubic-bezier(0.25, 0.1, 0.25, 1);
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* --- Button Styling (Updated) --- */
+        .glowing-btn {
+            background: var(--brand-green);
+            color: var(--light-text);
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color);
+            margin-top: 30px;
+            letter-spacing: 1px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .glowing-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px var(--glow-color), 0 0 35px var(--glow-color), 0 0 60px var(--glow-color);
+        }
+
+        .glowing-btn:active {
+            transform: translateY(0);
+        }
+
+        .glowing-btn:disabled {
+            cursor: not-allowed;
+            background: #555;
+            box-shadow: none;
+        }
+        
+        #whatsapp-btn {
+            background: #25D366;
+            box-shadow: 0 0 5px #25D366, 0 0 15px #25D366;
+        }
+
+        #whatsapp-btn:hover {
+             box-shadow: 0 0 10px #25D366, 0 0 25px #25D366, 0 0 50px #25D366;
+        }
+        
+        /* --- Other Sections (Form, Success) --- */
+        .step { display: none; }
+        .step.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        #resultMessage h2 { color: var(--brand-yellow); font-size: 1.8rem; }
+        .form-input {
+            width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px;
+            border: 1px solid var(--brand-yellow); background-color: var(--page-bg);
+            color: var(--light-text); font-size: 1rem;
+        }
+        .form-input:focus { outline: none; box-shadow: 0 0 10px var(--glow-color); }
+        #successMessage p { font-size: 1.1rem; line-height: 1.6; }
+
+        /* --- Ad Container Styling --- */
+        .ad-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 480px) {
+            .eid-greeting { font-size: 2.5rem; }
+            .main-heading { font-size: 1.2rem; }
+            .glowing-btn { padding: 12px 25px; font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- AD UNIT 1: Top of the page (External) -->
+    <div class="ad-container" id="top-ad">
+        <script type="text/javascript">
+            atOptions = {
+                'key' : 'd94bd149c1d4daea74c97de0ae2c697d',
+                'format' : 'iframe',
+                'height' : 60,
+                'width' : 468,
+                'params' : {}
+            };
+        </script>
+        <script type="text/javascript" src="//www.highperformanceformat.com/d94bd149c1d4daea74c97de0ae2c697d/invoke.js"></script>
+    </div>
+
+    <div class="container">
+        <!-- Step 1: Spin the Wheel -->
+        <div id="step1-spin" class="step active">
+            <div class="header">
+                <div class="eid-greeting">Eid Mubarak!</div>
+                <h1 class="main-heading">Spin the Wheel & Win Your Eidi!</h1>
+            </div>
+            
+            <div class="wheel-container">
+                <div class="wheel-pointer"></div>
+                <img id="spinWheel" src="spin.png" alt="Spinning Wheel of Prizes">
+            </div>
+
+            <!-- AD UNIT 2: Spin Page (Internal) -->
+            <div class="ad-container">
+                <script type="text/javascript">
+                    atOptions = { 'key' : 'd94bd149c1d4daea74c97de0ae2c697d', 'format' : 'iframe', 'height' : 60, 'width' : 468, 'params' : {} };
+                </script>
+                <script type="text/javascript" src="//www.highperformanceformat.com/d94bd149c1d4daea74c97de0ae2c697d/invoke.js"></script>
+            </div>
+
+            <button id="spinBtn" class="glowing-btn">SPIN NOW</button>
+        </div>
+
+        <!-- Step 2: Show Result & Share -->
+        <div id="step2-share" class="step">
+            <div id="resultMessage">
+                <h2 id="prize-name"></h2>
+                <p>To claim your prize, share this page with 10 WhatsApp friends.</p>
+            </div>
+
+            <!-- AD UNIT 3: Share Page (Internal) -->
+            <div class="ad-container">
+                <script type="text/javascript">
+                    atOptions = { 'key' : 'd94bd149c1d4daea74c97de0ae2c697d', 'format' : 'iframe', 'height' : 60, 'width' : 468, 'params' : {} };
+                </script>
+                <script type="text/javascript" src="//www.highperformanceformat.com/d94bd149c1d4daea74c97de0ae2c697d/invoke.js"></script>
+            </div>
+
+            <a id="whatsapp-btn" href="#" class="glowing-btn" style="text-decoration: none; display: inline-block;">
+                Share on WhatsApp
+            </a>
+        </div>
+
+        <!-- Step 3: Claim Form -->
+        <div id="step3-form" class="step">
+            <h2>Claim Your Prize!</h2>
+            <p>Fill in the details below to receive your <strong id="form-prize-name"></strong>.</p>
+            <form id="claimForm" style="margin-top: 20px;">
+                <input type="text" id="userName" class="form-input" placeholder="Enter Your Full Name" required>
+                <input type="tel" id="userMobile" class="form-input" placeholder="Enter Your Mobile Number" required>
+
+                <!-- AD UNIT 4: Claim Form (Internal) -->
+                <div class="ad-container">
+                    <script type="text/javascript">
+                        atOptions = { 'key' : 'd94bd149c1d4daea74c97de0ae2c697d', 'format' : 'iframe', 'height' : 60, 'width' : 468, 'params' : {} };
+                    </script>
+                    <script type="text/javascript" src="//www.highperformanceformat.com/d94bd149c1d4daea74c97de0ae2c697d/invoke.js"></script>
+                </div>
+
+                <button type="submit" class="glowing-btn">SUBMIT CLAIM</button>
+            </form>
+        </div>
+
+        <!-- Step 4: Success Message -->
+        <div id="step4-success" class="step">
+            <div id="successMessage" style="padding: 20px 0;">
+                <h2 class="eid-greeting">Congratulations!</h2>
+                 <p>Your prize claim has been submitted successfully!</p>
+                 <p>You will be contacted soon.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- AD UNIT 5: Bottom of the page (External) -->
+    <div class="ad-container" id="bottom-ad">
+        <script type="text/javascript">
+            atOptions = {
+                'key' : 'd94bd149c1d4daea74c97de0ae2c697d',
+                'format' : 'iframe',
+                'height' : 60,
+                'width' : 468,
+                'params' : {}
+            };
+        </script>
+        <script type="text/javascript" src="//www.highperformanceformat.com/d94bd149c1d4daea74c97de0ae2c697d/invoke.js"></script>
+    </div>
+
+    <script>
+        // --- Configuration (UPDATED TO MATCH YOUR WHEEL IMAGE) ---
+        const prizes = [
+            { text: "Earn Money PayTM" },
+            { text: "Cinema Ticket" },
+            { text: "Smartphone" },
+            { text: "Samsung UHD TV" },
+            { text: "Smartwatch" },
+            { text: "Bluetooth Speaker" },
+            { text: "Earbuds" },
+            { text: "Better Luck Next Time", type: 'loss' }, // This will be excluded from winning
+            { text: "Amazon Gift Card" },
+            { text: "Free Coffee Coupon" },
+            { text: "20% Discount" },
+            { text: "Surprise Gift Box" },
+        ];
+
+        // --- DOM Elements ---
+        const wheel = document.getElementById('spinWheel');
+        const spinBtn = document.getElementById('spinBtn');
+        const step1 = document.getElementById('step1-spin');
+        const step2 = document.getElementById('step2-share');
+        const step3 = document.getElementById('step3-form');
+        const step4 = document.getElementById('step4-success');
+        const prizeNameDisplay = document.getElementById('prize-name');
+        const formPrizeNameDisplay = document.getElementById('form-prize-name');
+        const whatsappBtn = document.getElementById('whatsapp-btn');
+        const claimForm = document.getElementById('claimForm');
+
+        // --- Spin Logic ---
+        const segmentAngle = 360 / prizes.length;
+        let isSpinning = false;
+        
+        spinBtn.addEventListener('click', () => {
+            if (isSpinning) return;
+            isSpinning = true;
+            spinBtn.disabled = true;
+
+            const winningPrizes = prizes.filter(p => p.type !== 'loss');
+            const winningPrizeIndex = Math.floor(Math.random() * winningPrizes.length);
+            const winningPrize = winningPrizes[winningPrizeIndex];
+            
+            const targetSegmentIndex = prizes.findIndex(p => p.text === winningPrize.text);
+
+            const randomOffset = Math.random() * (segmentAngle - 10) + 5;
+            const targetRotation = (targetSegmentIndex * segmentAngle) + randomOffset;
+            const totalRotation = 360 * 8 + targetRotation; // 8 full spins for effect
+
+            wheel.style.transform = `rotate(${totalRotation}deg)`;
+
+            wheel.addEventListener('transitionend', () => {
+                showResult(winningPrize.text);
+                isSpinning = false; 
+            }, { once: true });
+        });
+
+        function showResult(prizeText) {
+            confetti({ particleCount: 150, spread: 180, origin: { y: 0.6 } });
+
+            prizeNameDisplay.textContent = `Congratulations! You won ${prizeText}!`;
+            step1.classList.remove('active');
+            step2.classList.add('active');
+
+            const shareText = "I just won an amazing Eidi on this Spin & Win page! Try your luck too and see what you win this Eid!";
+            whatsappBtn.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + window.location.href)}`;
+            
+            formPrizeNameDisplay.textContent = prizeText;
+        }
+
+        // --- Flow Control ---
+        whatsappBtn.addEventListener('click', (e) => {
+            setTimeout(() => {
+                step2.classList.remove('active');
+                step3.classList.add('active');
+            }, 2500);
+        });
+
+        claimForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('userName').value;
+            const mobile = document.getElementById('userMobile').value;
+            
+            if (name.trim() === '' || mobile.trim() === '') {
+                alert('Please fill in all fields.');
+                return;
+            }
+
+            step3.classList.remove('active');
+            step4.classList.add('active');
+
+            setTimeout(() => {
+                window.location.href = 'https://www.profitableratecpm.com/r5gny9tb4?key=f008d76b52acbdb8e3ce1df631d88d21';
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
