@@ -360,7 +360,7 @@
             step1.classList.remove('active');
             step2.classList.add('active');
 
-            const shareText = ":🎉 I just won an AMAZING Eid Gift on this 🎯 Spin & Win page!🕌✨ It’s a limited-time Eid offer — and YES, it really works!💥 Try your luck now and see what surprise gift YOU get 👉🔗";
+            const shareText = ":🎉 I just won an AMAZING Eid Gift on this </br> 🎯 Spin & Win page! </br> 🕌✨ It’s a limited-time Eid offer — </br> and YES, it really works! </br> 💥 Try your luck now and see what surprise gift YOU get 👉 </br> 🔗";
             whatsappBtn.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + window.location.href)}`;
             
             formPrizeNameDisplay.textContent = prizeText;
